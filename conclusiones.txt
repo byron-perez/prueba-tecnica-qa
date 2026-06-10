@@ -1,12 +1,14 @@
 ======================================================
-HALLAZGOS Y CONCLUSIONES - PRUEBA TÉCNICA E2E
+HALLAZGOS Y CONCLUSIONES - PRUEBA TÉCNICA E2E y REST
 ======================================================
+
+Ejercicio 1:
 
 1. Arquitectura y Diseño de la Prueba:
    - Se implementó el framework Serenity BDD con JUnit 5 utilizando el patrón "Action Classes" (mediante la clase UIInteractions).
    - Esta aproximación modulariza el código separando los localizadores (Page Objects), las acciones de interacción y el orquestador de la prueba. Esto fomenta la mantenibilidad y evita la rigidez de las pruebas monolíticas.
 
-2. Hallazgos sobre el Sistema Bajo Prueba (Demoblaze):
+2. Hallazgos sobre el SUT (Demoblaze):
    - Carga Asíncrona (SPA): El sitio renderiza la información de los productos y el carrito mediante llamadas API/AJAX.
    - Condiciones de Carrera (Race Conditions): Se observó que al navegar a la página del carrito, la tabla de productos tarda unos milisegundos en poblarse. Si el script intentaba leer los productos de forma inmediata, resultaba en fallos intermitentes (flakiness).
    - Solución a la Sincronización: Se implementaron "Explicit Waits" (esperas explícitas) en la clase de acciones, asegurando que WebDriver espere a que la tabla del carrito tenga al menos la cantidad de elementos requerida antes de realizar la aserción final.
@@ -14,5 +16,85 @@ HALLAZGOS Y CONCLUSIONES - PRUEBA TÉCNICA E2E
 3. Manejo de Alertas Nativas:
    - Se evidenció que el sistema despliega alertas nativas de JavaScript (`alert()`) cada vez que un usuario añade un producto. El framework fue adaptado para cambiar el contexto (`switchTo().alert()`) y aceptar dicha alerta antes de continuar la navegación.
 
-4. Conclusión Final:
-   - El flujo E2E crítico (desde agregar al carrito hasta finalizar la compra) fue automatizado exitosamente. La prueba resultante es robusta, tolerante a tiempos de carga lentos de la red y fácilmente escalable en caso de que se necesiten agregar más flujos de compra en el futuro.
+4. Conclusiones:
+   - El flujo el Happy Path fue automatizado exitosamente. La prueba resultante es robusta, tolerante a tiempos de carga lentos de la red y fácilmente escalable en caso de que se necesiten agregar más flujos de compra en el futuro.
+   - La prueba de Happy Path debe ser acompañada por pruebas que contemplen los principales flujos alternativos de prioridad para el proyecto y sistema.
+
+Ejercicio 2:
+
+A continuación se documentan las entradas (Payloads JSON) y las salidas (Respuestas HTTP) obtenidas al probar los servicios de Signup y Login de Demoblaze (https://api.demoblaze.com/).
+
+Nota: Las pruebas automatizadas para estos casos se han implementado usando Serenity REST Assured en la clase `WhenTestingAuthApiTest.java`.
+
+------------------------------------------------------
+CASO 1: Crear un nuevo usuario en signup
+Endpoint: POST https://api.demoblaze.com/signup
+------------------------------------------------------
+Entrada (Request Body - JSON):
+{
+  "username": "usuario_prueba_unico_991",
+  "password": "password123"
+}
+
+Salida (Response):
+- HTTP Status Code: 200 OK
+- Response Body: (Vacío / String vacío "")
+
+
+------------------------------------------------------
+CASO 2: Intentar crear un usuario ya existente
+Endpoint: POST https://api.demoblaze.com/signup
+------------------------------------------------------
+Entrada (Request Body - JSON):
+{
+  "username": "usuario_prueba_unico_991",
+  "password": "password123"
+}
+
+Salida (Response):
+- HTTP Status Code: 200 OK
+- Response Body: 
+{
+  "errorMessage": "This user already exist."
+}
+
+
+------------------------------------------------------
+CASO 3: Usuario y password correcto en login
+Endpoint: POST https://api.demoblaze.com/login
+------------------------------------------------------
+Entrada (Request Body - JSON):
+{
+  "username": "usuario_prueba_unico_991",
+  "password": "password123"
+}
+
+Salida (Response):
+- HTTP Status Code: 200 OK
+- Response Body: 
+"Auth_token: dXN1YXJpb19wcnVlYmFfdW5pY29fOTkxMTcxODAyMzU5NjAzNw=="
+
+
+------------------------------------------------------
+CASO 4: Usuario y password incorrecto en login
+Endpoint: POST https://api.demoblaze.com/login
+------------------------------------------------------
+Entrada (Request Body - JSON):
+{
+  "username": "usuario_prueba_unico_991",
+  "password": "clave_incorrecta_xyz"
+}
+
+Salida (Response):
+- HTTP Status Code: 200 OK
+- Response Body: 
+{
+  "errorMessage": "Wrong password."
+}
+
+======================================================
+CONCLUSIÓN TÉCNICA DE LA API
+======================================================
+1. La API devuelve siempre un código HTTP 200 OK incluso cuando hay errores lógicos (como usuario existente o clave incorrecta). Los errores se manejan enviando un objeto JSON con la clave "errorMessage".
+2. Cuando la creación es exitosa, la API no devuelve un JSON de confirmación, sino un cuerpo totalmente vacío.
+3. El token de autenticación devuelto en el login viene como una cadena de texto plana con el formato "Auth_token: [base64_string]", en lugar de un objeto JSON estructurado como {"token": "..."}.
