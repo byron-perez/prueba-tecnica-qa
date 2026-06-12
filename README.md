@@ -1,25 +1,39 @@
-# Serenity JUnit Starter project
+# INSTRUCCIONES DE EJECUCIÓN - PRUEBA TÉCNICA E2E
 
-Get started quickly with Serenity BDD and JUnit 5 using Page Objects and Action Classes with this simple starter project. 
+## Pre-requisitos
+- Java 17 o superior instalado.
+- Navegador Firefox.
 
-## Get the code
+Se describen los pasos necesarios para ejecutar tanto Ejercicio 1 como Ejercicio 2.
 
-Click on the [Use This Template button](https://github.com/serenity-bdd/serenity-junit-starter/generate) to create a new project in your own Github account. 
+## Ejercicio 1
 
-Or simply [download a zip](https://github.com/serenity-bdd/serenity-junit-starter/archive/master.zip) file.
+### Pasos para ejecutar la prueba:
 
-## Running the tests under Maven
+1. Abrir una terminal y navegar al directorio raíz del proyecto.
 
-The template project comes with both Maven and Gradle build scripts. To run the tests with Maven, open a command window and run:
+2. Ejecutar las pruebas utilizando Maven (recomendado debido a la configuración actual del proyecto):
+   ```
+   ./mvnw clean verify -Dit.test=WhenPurchasingProductsTest
+   ```
 
-  ./mvnw clean verify
+3. Generación del reporte detallado:
+   - El reporte se encuentra en la carpeta: `target/site/serenity/`
+   - Abra el archivo `index.html` en cualquier navegador web para visualizar los resultados.
 
-## Use Gradle
+## Ejercicio 2
 
-For GRADLE, pen a command window and run:
+1. Abrir una terminal y navegar al directorio raíz del proyecto.
 
-  ./gradlew test 
+2. Ejecutar las pruebas utilizando Maven (recomendado debido a la configuración actual del proyecto):
+   ```
+   ./mvnw clean verify -Dit.test=WhenTestingAuthApiTest
+   ```
 
-## Viewing the reports
+3. Generación del reporte detallado:
+   - El reporte se encuentra en la carpeta: `target/site/serenity/`
+   - Abra el archivo `index.html` en cualquier navegador web para visualizar los resultados.
 
-Both of the commands provided above will produce a Serenity test report in the `target/site/serenity` directory. Go take a look!
+## Resultados
+
+Los resultados de este ejercicio se documentan en `conclusiones.txt`
